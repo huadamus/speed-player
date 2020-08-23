@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.setup.SetupFragment">
+
+    <TextView
+        android:id="@+id/text_medium_speed_threshold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Medium speed threshold: "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <SeekBar
+        android:id="@+id/seekbar_medium_speed_threshold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_medium_speed_threshold" />
+
+    <TextView
+        android:id="@+id/text_high_speed_threshold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="High speed threshold: "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekbar_medium_speed_threshold" />
+
+    <SeekBar
+        android:id="@+id/seekbar_high_speed_threshold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_high_speed_threshold" />
+
+    <TextView
+        android:id="@+id/text_setup_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choosing a track assigns it to following playlist:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekbar_high_speed_threshold" />
+
+    <RadioGroup
+        android:id="@+id/radiogroup_setup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_setup_info" >
+
+        <RadioButton
+            android:id="@+id/radiobutton_setup_low"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Low speed" />
+
+        <RadioButton
+            android:id="@+id/radiobutton_setup_medium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Med. speed" />
+
+        <RadioButton
+            android:id="@+id/radiobutton_setup_high"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="High speed" />
+
+        <RadioButton
+            android:id="@+id/radiobutton_setup_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear" />
+    </RadioGroup>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_setup_tracks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radiogroup_setup" />
+</androidx.constraintlayout.widget.ConstraintLayout>

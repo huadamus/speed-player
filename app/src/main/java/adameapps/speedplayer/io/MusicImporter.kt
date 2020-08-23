@@ -9,7 +9,7 @@ import android.provider.MediaStore
 import java.io.File
 import java.io.InputStream
 
-object FileManager {
+object MusicImporter {
 
     fun getMusic(context: Context): List<MusicFile> {
         val output = mutableListOf<MusicFile>()

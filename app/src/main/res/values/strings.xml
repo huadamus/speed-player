@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SpeedPlayer</string>
+    <string name="title_setup">Setup</string>
+    <string name="title_player">Player</string>
 </resources>

@@ -1,44 +1,31 @@
 package adameapps.speedplayer.ui
 
 import adameapps.speedplayer.R
-import adameapps.speedplayer.util.PermissionResultListener
-import adameapps.speedplayer.util.PermissionsManager
+import adameapps.speedplayer.model.MusicLibrary
 import android.os.Bundle
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 
-
-class MainActivity : AppCompatActivity(), PermissionResultListener {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }
+        val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        PermissionsManager.onPermissionsResult(requestCode, grantResults, this)
-    }
+        MusicLibrary.init(this)
 
-    override fun onPermissionResult(permission: PermissionsManager.Permission, granted: Boolean) {
-        when(permission) {
-            PermissionsManager.Permission.LOCATION -> {
-                if(!granted) {
-                    //TODO: Handle not granted permission result
-                }
-            }
-            PermissionsManager.Permission.FILE_READ -> {
-                if(!granted) {
-                    //TODO: Handle not granted permission result
-                }
-            }
-            PermissionsManager.Permission.FILE_WRITE -> {
-                if(!granted) {
-                    //TODO: Handle not granted permission result
-                }
-            }
-        }
+        val navController = findNavController(R.id.nav_host_fragment)
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_setup, R.id.navigation_player
+            )
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
     }
 }

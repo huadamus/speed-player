@@ -14,7 +14,7 @@ class GPSManager(context: Context, private val speedChangeListener: SpeedChangeL
     private val locationManager: LocationManager =
         context.getSystemService(LOCATION_SERVICE) as LocationManager
 
-    init {
+    fun init() {
         locationManager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
             MINIMUM_TIME_BETWEEN_UPDATES, MINIMUM_DISTANCE_CHANGE_FOR_UPDATES, this
@@ -27,10 +27,12 @@ class GPSManager(context: Context, private val speedChangeListener: SpeedChangeL
 
     override fun onProviderEnabled(provider: String) {
         super.onProviderEnabled(provider)
+        speedChangeListener.onGpsEnable()
     }
 
     override fun onProviderDisabled(provider: String) {
         super.onProviderDisabled(provider)
+        speedChangeListener.onGpsDisable()
     }
 
     private fun getKilometersPerHourFromMetersPerSecond(speed: Float): Int {
