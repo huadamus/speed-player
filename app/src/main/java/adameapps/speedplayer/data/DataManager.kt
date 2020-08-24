@@ -3,7 +3,7 @@ package adameapps.speedplayer.data
 import adameapps.speedplayer.DEFAULT_HIGH_THRESHOLD
 import adameapps.speedplayer.DEFAULT_MEDIUM_THRESHOLD
 import adameapps.speedplayer.model.MusicFile
-import adameapps.speedplayer.model.MusicLibrary
+import adameapps.speedplayer.model.MusicLibrary.musicList
 import adameapps.speedplayer.model.State
 import android.app.Activity
 import android.content.Context
@@ -21,10 +21,17 @@ object DataManager {
         }
     }
 
-    fun readTracksListByState(activity: Activity, state: State): List<MusicFile> {
+    fun readTracksListByState(
+        activity: Activity,
+        state: State
+    ): List<MusicFile> {
         val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return listOf()
-        return MusicLibrary.musicList
-            .filter { track -> sharedPref.getInt(track.uri.path, State.NONE.id) == state.id }
+        return musicList.filter { track ->
+            sharedPref.getInt(
+                track.uri.path,
+                State.NONE.id
+            ) == state.id
+        }
     }
 
     fun readTrackType(activity: Activity, musicFile: MusicFile): State {
@@ -34,17 +41,17 @@ object DataManager {
 
     fun readAnyTrackSelectedForEachState(activity: Activity): Boolean {
         val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return false
-        return MusicLibrary.musicList.any { track ->
+        return musicList.any { track ->
             sharedPref.getInt(
                 track.uri.path,
                 State.NONE.id
             ) == State.LOW.id
-        } && MusicLibrary.musicList.any { track ->
+        } && musicList.any { track ->
             sharedPref.getInt(
                 track.uri.path,
                 State.NONE.id
             ) == State.MEDIUM.id
-        } && MusicLibrary.musicList.any { track ->
+        } && musicList.any { track ->
             sharedPref.getInt(
                 track.uri.path,
                 State.NONE.id
@@ -63,7 +70,7 @@ object DataManager {
     private fun readThreshold(activity: Activity, high: Boolean): Int {
         val tag: String
         val defaultThreshold: Int
-        if(high) {
+        if (high) {
             tag = HIGH_STATE_THRESHOLD_TAG
             defaultThreshold = DEFAULT_HIGH_THRESHOLD
         } else {

@@ -22,13 +22,14 @@ class PlayerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotification()
+        start()
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         stop()
-        hideNotification()
+        hideNotification(this)
     }
 
     private fun createNotification() {
@@ -36,59 +37,50 @@ class PlayerService : Service() {
             val channel = NotificationChannel(
                 CHANNEL_LOW_IMPORTANCE,
                 getString(R.string.app_name),
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             )
             val notificationManager = getSystemService(
                 NotificationManager::class.java
             )
             notificationManager.createNotificationChannel(channel)
         }
-        val activityIntent = Intent(this, MainActivity::class.java)
-        val showAppIntent = PendingIntent.getActivity(this, 0, activityIntent, 0)
-        notificationBuilder.setContentTitle("NOTIFICATION")
-            .setContentText("TEST")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+        notificationBuilder = NotificationCompat.Builder(this, CHANNEL_LOW_IMPORTANCE)
+            .setContentText("")
+            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
-            .addAction(
-                NotificationCompat.Action.Builder(
-                    R.drawable.ic_launcher_foreground,
-                    "BUTTON",
-                    showAppIntent
-                ).build()
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    Intent(this, MainActivity::class.java),
+                    0
+                )
             )
-        showNotification(this)
-        shownNotification = true
-    }
-
-    private fun hideNotification() {
-        with(NotificationManagerCompat.from(this)) {
-            cancel(NOTIFICATION_ID)
-        }
+        updateNotification(this, "")
     }
 
     companion object {
-        const val NOTIFICATION_ID = 8001
-        const val CHANNEL_LOW_IMPORTANCE = "speed_player_low_importance"
+        private const val NOTIFICATION_ID = 8001
+        private const val CHANNEL_LOW_IMPORTANCE = "speed_player_low_importance"
 
         private lateinit var notificationBuilder: NotificationCompat.Builder
-        private var shownNotification = false
-        var musicManager: MusicManager? = null
+        private var musicManager: MusicManager? = null
         private lateinit var gpsManager: GPSManager
+        var currentTrackTitle: String? = null
 
         fun init(
             activity: Activity,
             musicPlaybackListener: MusicPlaybackListener,
             speedChangeListener: SpeedChangeListener
         ) {
-            shownNotification = false
-            notificationBuilder = NotificationCompat.Builder(activity, CHANNEL_LOW_IMPORTANCE)
             musicManager = MusicManager(
                 activity,
                 musicPlaybackListener,
                 DataManager.readMediumThreshold(activity),
                 DataManager.readHighThreshold(activity)
             )
+            updateNotification(activity, "")
             gpsManager = GPSManager(activity, speedChangeListener)
             gpsManager.init()
         }
@@ -103,11 +95,11 @@ class PlayerService : Service() {
 
         fun stop() {
             musicManager?.stop()
-            musicManager?.terminate()
+            currentTrackTitle = null
         }
 
         fun isPlaying(): Boolean {
-            return if(musicManager == null) {
+            return if (musicManager == null) {
                 false
             } else {
                 musicManager!!.isPlaying()
@@ -127,15 +119,18 @@ class PlayerService : Service() {
         }
 
         fun updateNotification(context: Context, title: String) {
-            notificationBuilder.setContentText(title)
-            showNotification(context)
-        }
-
-        private fun showNotification(context: Context) {
-            if(shownNotification) {
+            if (this::notificationBuilder.isInitialized) {
+                currentTrackTitle = title
+                notificationBuilder.setContentText(title)
                 with(NotificationManagerCompat.from(context)) {
                     notify(NOTIFICATION_ID, notificationBuilder.build())
                 }
+            }
+        }
+
+        private fun hideNotification(context: Context) {
+            with(NotificationManagerCompat.from(context)) {
+                cancel(NOTIFICATION_ID)
             }
         }
     }

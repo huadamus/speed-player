@@ -24,7 +24,7 @@ class PlayerViewModel : ViewModel() {
         }
     }
 
-    fun showTrackSwitch(title: String) {
+    fun showTrackTitle(title: String) {
         _trackTitle.value = title
     }
 

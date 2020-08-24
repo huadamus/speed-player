@@ -46,6 +46,9 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
         playButton.setOnClickListener {
             onPlayButtonPressed()
         }
+        PlayerService.currentTrackTitle?.let {
+            playerViewModel.showTrackTitle(it)
+        }
         return root
     }
 
@@ -54,7 +57,7 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
     }
 
     override fun onMusicTitleSwitch(title: String) {
-        playerViewModel.showTrackSwitch(title)
+        playerViewModel.showTrackTitle(title)
     }
 
     override fun onSpeedChange(speedInKilometersPerHour: Int) {
@@ -75,9 +78,8 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
     private fun onPlayButtonPressed() {
         if (!isPlaying()) {
             if (DataManager.readAnyTrackSelectedForEachState(requireActivity())) {
-                requireActivity().startService(Intent(requireContext(), PlayerService::class.java))
                 PlayerService.init(requireActivity(), this, this)
-                PlayerService.start()
+                requireActivity().startService(Intent(requireContext(), PlayerService::class.java))
                 playButton.text = "STOP"
                 playerViewModel.showPlayerTurnedOff()
             } else {

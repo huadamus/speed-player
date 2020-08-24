@@ -6,6 +6,7 @@ import adameapps.speedplayer.R
 import adameapps.speedplayer.data.DataManager
 import adameapps.speedplayer.model.MusicLibrary
 import adameapps.speedplayer.model.State
+import adameapps.speedplayer.ui.PlayerService
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -66,6 +67,7 @@ class SetupFragment : Fragment() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 DataManager.saveMediumThreshold(requireActivity(), currentMediumSpeedThreshold)
+                PlayerService.updateMediumSpeedThreshold(currentMediumSpeedThreshold)
             }
         })
         highSpeedThresholdSeekBar.min = currentMediumSpeedThreshold - 1
@@ -84,6 +86,7 @@ class SetupFragment : Fragment() {
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 DataManager.saveHighThreshold(requireActivity(), currentHighSpeedThreshold)
+                PlayerService.updateHighSpeedThreshold(currentHighSpeedThreshold)
             }
         })
         setupViewModel.updateMediumThreshold(currentMediumSpeedThreshold)

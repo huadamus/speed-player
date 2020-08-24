@@ -30,10 +30,6 @@ class MusicManager(
         currentState = State.NONE
     }
 
-    fun terminate() {
-        musicPlayer.terminate()
-    }
-
     fun isPlaying() = currentState != State.NONE
 
     fun reportSpeed(speed: Int) {
@@ -54,6 +50,7 @@ class MusicManager(
         }
     }
 
+    //TODO: Add multiple tracks per playlist support
     private fun play(state: State) {
         if (currentState != state) {
             when (currentState) {

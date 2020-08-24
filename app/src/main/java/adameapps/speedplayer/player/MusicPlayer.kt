@@ -26,8 +26,7 @@ class MusicPlayer(
             e.printStackTrace()
         }
         mediaPlayer.start()
-        setMusicContinuity(music, currentTrackId)
-        PlayerService.updateNotification(context, music[currentTrackId].title)
+        setMusicContinuityAndInterface(music, currentTrackId)
     }
 
     fun fade(music: List<MusicFile>, currentTrackId: Int, timestamp: Int) {
@@ -64,7 +63,7 @@ class MusicPlayer(
                     mediaPlayer.reset()
                     mediaPlayer.release()
                     mediaPlayer = fadeMediaPlayer
-                    setMusicContinuity(music, currentTrackId)
+                    setMusicContinuityAndInterface(music, currentTrackId)
                 }
             }
             fading = false
@@ -77,13 +76,9 @@ class MusicPlayer(
         mediaPlayer.reset()
     }
 
-    fun terminate() {
-        mediaPlayer.release()
-    }
-
     fun getTimestamp() = mediaPlayer.currentPosition
 
-    private fun setMusicContinuity(
+    private fun setMusicContinuityAndInterface(
         music: List<MusicFile>,
         currentTrackId: Int
     ) {
@@ -96,6 +91,7 @@ class MusicPlayer(
             }
             play(music, nextTrackId)
         }
+        PlayerService.updateNotification(context, music[currentTrackId].title)
     }
 
     companion object {

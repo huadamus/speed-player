@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".ui.setup.SetupFragment">
 
     <TextView
@@ -60,7 +61,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_setup_info" >
+        app:layout_constraintTop_toBottomOf="@id/text_setup_info">
 
         <RadioButton
             android:id="@+id/radiobutton_setup_low"
