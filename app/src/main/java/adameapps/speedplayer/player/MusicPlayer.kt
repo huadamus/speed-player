@@ -1,6 +1,7 @@
 package adameapps.speedplayer.player
 
 import adameapps.speedplayer.model.MusicFile
+import adameapps.speedplayer.ui.PlayerService
 import android.content.Context
 import android.media.MediaPlayer
 import kotlinx.coroutines.GlobalScope
@@ -26,6 +27,7 @@ class MusicPlayer(
         }
         mediaPlayer.start()
         setMusicContinuity(music, currentTrackId)
+        PlayerService.updateNotification(context, music[currentTrackId].title)
     }
 
     fun fade(music: List<MusicFile>, currentTrackId: Int, timestamp: Int) {
@@ -73,6 +75,10 @@ class MusicPlayer(
         musicPlaybackListener.onMusicTitleSwitch(EMPTY_TITLE)
         mediaPlayer.stop()
         mediaPlayer.reset()
+    }
+
+    fun terminate() {
+        mediaPlayer.release()
     }
 
     fun getTimestamp() = mediaPlayer.currentPosition

@@ -30,6 +30,10 @@ class MusicManager(
         currentState = State.NONE
     }
 
+    fun terminate() {
+        musicPlayer.terminate()
+    }
+
     fun isPlaying() = currentState != State.NONE
 
     fun reportSpeed(speed: Int) {

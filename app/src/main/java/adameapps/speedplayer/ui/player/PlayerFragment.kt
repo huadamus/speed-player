@@ -2,10 +2,10 @@ package adameapps.speedplayer.ui.player
 
 import adameapps.speedplayer.R
 import adameapps.speedplayer.data.DataManager
-import adameapps.speedplayer.gps.GPSManager
 import adameapps.speedplayer.gps.SpeedChangeListener
-import adameapps.speedplayer.player.MusicManager
 import adameapps.speedplayer.player.MusicPlaybackListener
+import adameapps.speedplayer.ui.PlayerService
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +20,6 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
     private val playerViewModel: PlayerViewModel by viewModels()
 
     private lateinit var playButton: Button
-
-    private lateinit var musicManager: MusicManager
-    private lateinit var gpsManager: GPSManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,23 +38,14 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
         })
 
         playButton = root.findViewById(R.id.button_play_pause)
+        playButton.text = if(isPlaying()) {
+            "STOP"
+        } else {
+            "START"
+        }
         playButton.setOnClickListener {
             onPlayButtonPressed()
         }
-
-
-        //to service
-        musicManager = MusicManager(
-            requireActivity(),
-            this,
-            DataManager.readMediumThreshold(requireActivity()),
-            DataManager.readHighThreshold(requireActivity())
-        )
-        gpsManager = GPSManager(requireContext(), this)
-        gpsManager.init()
-        //until here
-
-
         return root
     }
 
@@ -70,8 +58,10 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
     }
 
     override fun onSpeedChange(speedInKilometersPerHour: Int) {
-        musicManager.reportSpeed(speedInKilometersPerHour)
-        playerViewModel.onSpeedChange(musicManager.isPlaying(), speedInKilometersPerHour)
+        if (isPlaying()) {
+            PlayerService.reportSpeed(speedInKilometersPerHour)
+            playerViewModel.onSpeedChange(isPlaying(), speedInKilometersPerHour)
+        }
     }
 
     override fun onGpsEnable() {
@@ -83,17 +73,24 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
     }
 
     private fun onPlayButtonPressed() {
-        if (playButton.text != "STOP") {
+        if (!isPlaying()) {
             if (DataManager.readAnyTrackSelectedForEachState(requireActivity())) {
+                requireActivity().startService(Intent(requireContext(), PlayerService::class.java))
+                PlayerService.init(requireActivity(), this, this)
+                PlayerService.start()
                 playButton.text = "STOP"
                 playerViewModel.showPlayerTurnedOff()
-                musicManager.start()
             } else {
                 //TODO: inform about the problem - no tracks selected
             }
         } else {
-            musicManager.stop()
+            PlayerService.stop()
+            requireActivity().stopService(Intent(requireContext(), PlayerService::class.java))
             playButton.text = "START"
         }
+    }
+
+    private fun isPlaying(): Boolean {
+        return PlayerService.isPlaying()
     }
 }
