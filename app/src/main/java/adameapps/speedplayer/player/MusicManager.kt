@@ -9,14 +9,16 @@ class MusicManager(
     musicPlaybackListener: MusicPlaybackListener,
     var mediumMusicThresholdSpeed: Int,
     var highMusicThresholdSpeed: Int
-) {
-    private val musicPlayer: MusicPlayer = MusicPlayer(activity, musicPlaybackListener)
+) : PlaybackDataChangeListener {
+    private val musicPlayer: MusicPlayer = MusicPlayer(activity, musicPlaybackListener, this)
 
+    private var currentState = State.NONE
+    private var lowSpeedTrack = 0
+    private var mediumSpeedTrack = 0
+    private var highSpeedTrack = 0
     private var lowSpeedTimestamp = 0
     private var mediumSpeedTimestamp = 0
     private var highSpeedTimestamp = 0
-
-    private var currentState = State.NONE
 
     fun start() {
         play(State.LOW)
@@ -33,7 +35,7 @@ class MusicManager(
     fun isPlaying() = currentState != State.NONE
 
     fun reportSpeed(speed: Int) {
-        if(isPlaying()) {
+        if (isPlaying()) {
             if (speed >= highMusicThresholdSpeed) {
                 if (currentState != State.HIGH) {
                     play(State.HIGH)
@@ -50,7 +52,10 @@ class MusicManager(
         }
     }
 
-    //TODO: Add multiple tracks per playlist support
+    fun assignMusicPlaybackListener(musicPlaybackListener: MusicPlaybackListener) {
+        musicPlayer.assignMusicPlaybackListener(musicPlaybackListener)
+    }
+
     private fun play(state: State) {
         if (currentState != state) {
             when (currentState) {
@@ -60,18 +65,57 @@ class MusicManager(
                 State.MEDIUM -> mediumSpeedTimestamp = musicPlayer.getTimestamp()
                 State.HIGH -> highSpeedTimestamp = musicPlayer.getTimestamp()
             }
-            if (isPlaying()) {
-                val timestamp = when(state) {
-                    State.LOW -> lowSpeedTimestamp
-                    State.MEDIUM -> mediumSpeedTimestamp
-                    State.HIGH -> highSpeedTimestamp
-                    else -> 0
+            val track: Int
+            val timestamp: Int
+            when (state) {
+                State.LOW -> {
+                    track = lowSpeedTrack
+                    timestamp = lowSpeedTimestamp
                 }
-                musicPlayer.fade(MusicLibrary.getMusic(activity, state), 0, timestamp)
+                State.MEDIUM -> {
+                    track = mediumSpeedTrack
+                    timestamp = mediumSpeedTimestamp
+                }
+                State.HIGH -> {
+                    track = highSpeedTrack
+                    timestamp = highSpeedTimestamp
+                }
+                else -> {
+                    track = 0
+                    timestamp = 0
+                }
+            }
+            if (isPlaying()) {
+                musicPlayer.fade(MusicLibrary.getMusic(activity, state), track, timestamp)
             } else {
-                musicPlayer.play(MusicLibrary.getMusic(activity, state), 0)
+                musicPlayer.play(MusicLibrary.getMusic(activity, state), track)
             }
             currentState = state
+        }
+    }
+
+    override fun onTrackFinished() {
+        when (currentState) {
+            State.LOW -> {
+                lowSpeedTrack++
+                if (lowSpeedTrack >= MusicLibrary.getMusic(activity, currentState).size) {
+                    lowSpeedTrack = 0
+                }
+            }
+            State.MEDIUM -> {
+                mediumSpeedTrack++
+                if (mediumSpeedTrack >= MusicLibrary.getMusic(activity, currentState).size) {
+                    mediumSpeedTrack = 0
+                }
+            }
+            State.HIGH -> {
+                highSpeedTrack++
+                if (highSpeedTrack >= MusicLibrary.getMusic(activity, currentState).size) {
+                    highSpeedTrack = 0
+                }
+            }
+            else -> {
+            }
         }
     }
 }

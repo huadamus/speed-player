@@ -49,6 +49,7 @@ class PlayerFragment : Fragment(), MusicPlaybackListener, SpeedChangeListener {
         PlayerService.currentTrackTitle?.let {
             playerViewModel.showTrackTitle(it)
         }
+        PlayerService.assignMusicPlaybackListener(this)
         return root
     }
 

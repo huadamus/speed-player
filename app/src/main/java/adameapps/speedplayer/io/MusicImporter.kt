@@ -3,11 +3,7 @@ package adameapps.speedplayer.io
 import adameapps.speedplayer.model.MusicFile
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
-import android.os.Environment
 import android.provider.MediaStore
-import java.io.File
-import java.io.InputStream
 
 object MusicImporter {
 
@@ -31,6 +27,9 @@ object MusicImporter {
                     )
                 }
             }
+        }
+        output.sortBy {
+            it.title
         }
         return output
     }

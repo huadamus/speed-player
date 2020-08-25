@@ -11,7 +11,8 @@ import java.io.IOException
 
 class MusicPlayer(
     private val context: Context,
-    private val musicPlaybackListener: MusicPlaybackListener
+    private var musicPlaybackListener: MusicPlaybackListener,
+    private val playbackDataChangeListener: PlaybackDataChangeListener
 ) {
     private var mediaPlayer = MediaPlayer()
     private var fading = false
@@ -78,11 +79,16 @@ class MusicPlayer(
 
     fun getTimestamp() = mediaPlayer.currentPosition
 
+    fun assignMusicPlaybackListener(musicPlaybackListener: MusicPlaybackListener) {
+        this.musicPlaybackListener = musicPlaybackListener
+    }
+
     private fun setMusicContinuityAndInterface(
         music: List<MusicFile>,
         currentTrackId: Int
     ) {
         mediaPlayer.setOnCompletionListener {
+            playbackDataChangeListener.onTrackFinished()
             stop()
             val nextTrackId = if (currentTrackId + 1 == music.size) {
                 0

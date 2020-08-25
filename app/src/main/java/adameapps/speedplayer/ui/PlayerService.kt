@@ -85,6 +85,10 @@ class PlayerService : Service() {
             gpsManager.init()
         }
 
+        fun assignMusicPlaybackListener(musicPlaybackListener: MusicPlaybackListener) {
+            musicManager?.assignMusicPlaybackListener(musicPlaybackListener)
+        }
+
         fun start() {
             musicManager?.start()
         }

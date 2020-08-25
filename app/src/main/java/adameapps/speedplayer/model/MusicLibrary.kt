@@ -15,6 +15,6 @@ object MusicLibrary {
     }
 
     fun getMusic(activity: Activity, state: State): List<MusicFile> {
-        return DataManager.readTracksListByState(activity, state)
+        return DataManager.readTracksListByState(activity, state).shuffled()
     }
 }
